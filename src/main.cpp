@@ -21,6 +21,7 @@
 
 // кривая вещь, но для тестового примера пойдет.  Переключатель на юнит-тесты и нормальный код
 //#define UNITTEST
+#define IDE
 
 #ifdef UNITTEST
 #include <Tests/UnitTests.h>
@@ -37,14 +38,16 @@ int main(int argc, char** argv)
 
 	#else
 
+#ifndef IDE
+	if (argc != 2)
+	{
+	 	throw std::runtime_error("Error: No file specified in command line argument");
+	}
 
-	// if (argc != 2)
-	// {
-	// 	throw std::runtime_error("Error: No file specified in command line argument");
-	// }
-
-//	std::ifstream file(argv[1]);
+	std::ifstream file(argv[1]);
+#else
 	std::ifstream file("./../commands_example.txt");
+#endif
 	if (!file)
 	{
 	 	throw std::runtime_error("Error: File not found - " + std::string(argv[1]));
