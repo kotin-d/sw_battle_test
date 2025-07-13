@@ -21,7 +21,7 @@
 
 // кривая вещь, но для тестового примера пойдет.  Переключатель на юнит-тесты и нормальный код
 //#define UNITTEST
-#define IDE
+//#define IDE
 
 #ifdef UNITTEST
 #include <Tests/UnitTests.h>
