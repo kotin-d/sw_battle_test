@@ -1,9 +1,5 @@
 #include "Unit.h"
 
-#include "Delegate/LogUnitDelegate.h"
-#include "Game.h"
-#include "Map.h"
-#include "Strategy/Finder.h"
 
 namespace sw::logic
 {
@@ -15,6 +11,21 @@ namespace sw::logic
 	void Unit::setDelegate(Delegate* delegate)
 	{
 		_delegate = delegate;
+	}
+
+	void Unit::setPathStrategy(IPath* strategy)
+	{
+		_path.reset(strategy);
+	}
+
+	void Unit::setHealtherStrategy(IHealther* strategy)
+	{
+		_healther.reset(strategy);
+	}
+
+	void Unit::setUnDetectorStrategy(IUnDetector* strategy)
+	{
+		_unDetector.reset(strategy);
 	}
 
 	void Unit::setStartPoint(const Position& start)
@@ -29,54 +40,24 @@ namespace sw::logic
 			_delegate->onMarchStart(_id, _path->startPoint(), _path->endPoint());
 	}
 
-	bool Unit::finishPath() const
-	{
-		return _path->finish();
-	}
-
 	uint32_t Unit::id() const
 	{
 		return _id;
 	}
 
-	void Unit::move(Map& map)
+	void Unit::pushAction(Action* action)
 	{
-		if (_path->isGenerated() && !_path->finish()) {
-			const auto old = _path->currentPosition();
-			const auto now = _path->nextPosition();
-			map.moveUnit(old, now);
+		if (action != nullptr)
+			_actions.emplace_back(action);
+	}
 
-			if (_path->finish() && _delegate)
-				_delegate->onMarchEnd(_id, _path->currentPosition());
+	void Unit::makeTurn(Map& map)
+	{
+		for (auto& action : _actions)
+		{
+			if (action->execute(map))
+				return;
 		}
-	}
-
-	bool Unit::checkReacher(const IFinder* finder, const Position& position) const
-	{
-		if (_reacher != nullptr)
-			return _reacher->check(finder, position, _path->currentPosition());
-		return true;
-	}
-
-	void Unit::takeDamage(const IDamager* damager)
-	{
-		_healther->takeAttack(damager);
-	}
-
-	bool Unit::oneAttack(Map& map, IFinder* finder, IDamager* damager)
-	{
-		auto enemy = finder->select(map, _path->currentPosition());
-		if (enemy == nullptr)
-			return false;
-
-		enemy->takeDamage(damager);
-		if (_delegate)
-		 	_delegate->onAttack(_id, enemy->id(), damager->power(), enemy->health());
-
-		if (enemy->isDied())
-			 Game::instance().killUnit(enemy);
-
-		return true;
 	}
 
 }

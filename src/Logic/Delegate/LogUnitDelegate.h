@@ -2,15 +2,15 @@
 
 #include "IO/System/EventLog.hpp"
 #include "Logic/Unit.h"
-
 #include <cstdint>
+
 
 namespace sw::logic
 {
-	class LogUnitDelegate final : public sw::logic::Unit::Delegate
+	class LogUnitDelegate final : public Unit::Delegate
 	{
 	public:
-		LogUnitDelegate(const uint64_t& tick, sw::EventLog& eventLog);
+		LogUnitDelegate(const uint64_t& tick, EventLog& eventLog);
 
 		void onMarchStart(uint32_t id, const Position& start, const Position& end) override;
 		void onMarchEnd(uint32_t id, const Position& end) override;
@@ -18,6 +18,6 @@ namespace sw::logic
 
 	private:
 		const uint64_t& _tick;
-		sw::EventLog& _eventLog;
+		EventLog& _eventLog;
 	};
 }

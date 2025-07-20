@@ -1,7 +1,4 @@
-#include "Logic/Delegate/LogMapDelegate.h"
 #include "Logic/Game.h"
-#include "Logic/Map.h"
-
 #include <IO/Commands/CreateMap.hpp>
 #include <IO/Commands/March.hpp>
 #include <IO/Commands/SpawnHunter.hpp>
@@ -14,40 +11,24 @@
 #include <IO/Events/UnitMoved.hpp>
 #include <IO/Events/UnitSpawned.hpp>
 #include <IO/System/CommandParser.hpp>
-#include <IO/System/EventLog.hpp>
 #include <IO/System/PrintDebug.hpp>
 #include <fstream>
 #include <iostream>
-
-// кривая вещь, но для тестового примера пойдет.  Переключатель на юнит-тесты и нормальный код
-//#define UNITTEST
-//#define IDE
-
-#ifdef UNITTEST
-#include <Tests/UnitTests.h>
-#endif
 
 
 int main(int argc, char** argv)
 {
 	using namespace sw;
 
-	#ifdef UNITTEST
-
-	UnitTests::fullTest();
-
-	#else
-
-#ifndef IDE
 	if (argc != 2)
 	{
 	 	throw std::runtime_error("Error: No file specified in command line argument");
 	}
 
 	std::ifstream file(argv[1]);
-#else
-	std::ifstream file("./../commands_example.txt");
-#endif
+
+//	std::ifstream file("./../commands_example.txt");
+
 	if (!file)
 	{
 	 	throw std::runtime_error("Error: File not found - " + std::string(argv[1]));
@@ -64,14 +45,8 @@ int main(int argc, char** argv)
 
 	parser.parse(file);
 
-	std::cout << "Game start " << std::endl;
-
 	while (!sw::logic::Game::instance().isGameOver())
 		sw::logic::Game::instance().makeTurn();
-
-//	std::cout << "Game over " << std::endl;
-
-//	sw::logic::Scene scene;
 
 	// std::cout << "\n\nEvents:\n";
 
@@ -109,8 +84,6 @@ int main(int argc, char** argv)
 
 	// eventLog.log(8, io::UnitAttacked{2, 3, 5, 0});
 	// eventLog.log(8, io::UnitDied{3});
-
-	#endif
 
 	return 0;
 }

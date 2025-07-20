@@ -6,7 +6,7 @@
 
 namespace sw::logic
 {
-	LogMapDelegate::LogMapDelegate(const uint64_t& tick, sw::EventLog& eventLog)
+	LogMapDelegate::LogMapDelegate(const uint64_t& tick, EventLog& eventLog)
 		: _tick(tick)
 		, _eventLog(eventLog)
 	{
@@ -17,17 +17,17 @@ namespace sw::logic
 		_eventLog.log(_tick, io::MapCreated{width, height});
 	}
 
-	void LogMapDelegate::onUnitSpawned(Unit* unit, const Position& position)
+	void LogMapDelegate::onUnitSpawned(const std::shared_ptr<Unit>& unit, const Position& position)
 	{
 		_eventLog.log(_tick, io::UnitSpawned{unit->id(), unit->name(), position.x, position.y});
 	}
 
-	void LogMapDelegate::onUnitMoved(Unit* unit, const Position& old, const Position& now)
+	void LogMapDelegate::onUnitMoved(const std::shared_ptr<Unit>& unit, const Position& old, const Position& now)
 	{
 		_eventLog.log(_tick, io::UnitMoved{unit->id(), now.x, now.y});
 	}
 
-	void LogMapDelegate::onUnitDied(Unit* unit)
+	void LogMapDelegate::onUnitDied(const std::shared_ptr<Unit>& unit)
 	{
 		_eventLog.log(_tick, io::UnitDied{unit->id()});
 	}

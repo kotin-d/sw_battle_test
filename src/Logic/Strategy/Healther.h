@@ -3,6 +3,7 @@
 #include "Damager.h"
 #include <cinttypes>
 
+
 namespace sw::logic
 {
 	// компонент отвечающий за здоровье и смерть фируры
@@ -36,7 +37,7 @@ namespace sw::logic
 	class HealtherSingle final : public IHealther
 	{
 	public:
-		virtual ~HealtherSingle() = default;
+		~HealtherSingle() override = default;
 		[[nodiscard]] uint32_t health() const override {return 0;}
 		void takeAttack(const IDamager* damager) override {}
 		void kill() override {_died = true;}

@@ -1,28 +1,23 @@
 #include "Hunter.h"
-#include "Map.h"
 #include "Strategy/PathLinear.h"
+#include "Strategy/Healther.h"
+#include "Strategy/UnDetector.h"
+#include "Strategy/AttackClose.h"
+#include "Strategy/AttackRange.h"
+#include "Strategy/Move.h"
+
 
 namespace sw::logic
 {
 	Hunter::Hunter(const uint32_t id, const uint32_t hp, const uint32_t strength, const uint32_t agility, const uint32_t range)
 		: Unit(id)
 	{
-		_healther = std::make_unique<HealtherRegular>(hp);
-		_path = std::make_unique<PathLinear>();
-		_reacher = std::make_unique<ReacherFull>();
+		setPathStrategy(new PathLinear());
+		setHealtherStrategy(new HealtherRegular(hp));
+		setUnDetectorStrategy(new UnDetectorFull());
 
-		_finderClose = std::make_unique<FinderClose>();
-		_damagerClose = std::make_unique<DamagerClose>(strength);
-
-		_finderRange = std::make_unique<FinderRange>(range);
-		_damagerRange = std::make_unique<DamagerClose>(agility);
+		pushAction(new AttackClose(*this, strength));
+		pushAction(new AttackRange(*this, range, agility));
+		pushAction(new Move(*this));
 	}
-
-	bool Hunter::attack(Map& map)
-	{
-		if (oneAttack(map, _finderClose.get(), _damagerClose.get()))
-			return true;
-		return oneAttack(map, _finderRange.get(), _damagerRange.get());
-	}
-
 }

@@ -25,10 +25,7 @@ namespace sw::io
 
 		void execute() const
 		{
-			auto unit = sw::logic::Game::instance().findUnit(unitId);
-			if (!unit)
-				return;
-			unit->setEndPoint({targetX, targetY});
+			sw::logic::Game::instance().march(unitId, {targetX, targetY});
 		}
 	};
 }

@@ -15,8 +15,5 @@ namespace sw::logic
 		[[nodiscard]] Position currentPosition() const override {return _startPoint;}
 		[[nodiscard]] Position nextPosition() override {return _startPoint;}
 		[[nodiscard]] bool finish() const override {return true;}
-
 	};
 }
-
-

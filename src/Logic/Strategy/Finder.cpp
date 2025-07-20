@@ -73,7 +73,6 @@ namespace sw::logic
 	Unit* IFinder::select(const Map& map, const Position& position) const
 	{
 		auto units = selectAll(map, position);
-
 		if (units.empty())
 			return nullptr;
 
@@ -85,8 +84,13 @@ namespace sw::logic
 		auto units = findAll(map, position);
 
 		units.erase(std::remove_if(units.begin(), units.end(),
-		 	[this, &position](const Unit* unit){return !unit->checkReacher(this, position);}),
-		 	units.end());
+		  	[this, &position](const Unit* unit)
+		  	{
+		  		if (unit != nullptr && unit->getUnDetector() != nullptr)
+		  			return !unit->getUnDetector()->check(this, position, unit->getPath()->currentPosition());
+		  		return false;
+		  	}),
+		  	units.end());
 
 		return units;
 	}

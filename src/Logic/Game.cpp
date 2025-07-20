@@ -1,7 +1,6 @@
 #include "Game.h"
 #include <fstream>
-#include <algorithm>
-#include <bits/locale_facets_nonio.h>
+
 
 namespace sw::logic
 {
@@ -22,8 +21,7 @@ namespace sw::logic
 	{
 		_turn = 1;
 		_map.clear();
-		_orders.clear();
-		_units.clear();
+		_model.clear();
 	}
 
 	void Game::createMap(const uint32_t width, const uint32_t height)
@@ -32,58 +30,53 @@ namespace sw::logic
 		_map.create(width, height);
 	}
 
-	void Game::spawn(const Unit::Ptr& unit, const Position& position)
+	void Game::spawn(const std::shared_ptr<Unit>& unit, const Position& position)
 	{
-		if (exist(unit.get()))
+		if (_model.exist(unit))
 			throw std::runtime_error("Unit already exist, id = " + std::to_string(unit->id()));
 
 		unit->setDelegate(&_logUnitDelegate);
-		_orders.push_back(unit->id());
-		_units.emplace(unit->id(), unit);
+		_model.push(unit);
 		_map.spawn(unit, position);
 	}
 
-	void Game::killUnit(Unit* unit)
+	void Game::march(const uint32_t id, const Position& position)
 	{
-		std::erase_if(_orders, [&unit](const int value){ return unit->id() == value; });		_units.erase(unit->id());
-		_map.kill(unit);
+		if (_model.exist(id))
+		{
+			auto unit = _model.findUnit(id);
+			unit->setEndPoint(position);
+		}
+		else
+		{
+			throw std::runtime_error("Unit not exist, id = " + std::to_string(id));
+		}
+	}
+
+	void Game::killUnit(const uint32_t id)
+	{
+		if (_model.exist(id))
+		{
+			_map.kill(_model.findUnit(id));
+			_model.erase(id);
+		}
+		else
+		{
+			throw std::runtime_error("Unit not exist, id = " + std::to_string(id));
+		}
 	}
 
 	bool Game::isGameOver() const
 	{
-		if (_orders.size() <= 1)
+		if (_model.size() <= 1)
 			return true;
-
-		for (const auto& unit : _units)
-		{
-			if (!unit.second->finishPath())
-				return false;
-		}
-		return true;
+		return _model.isEveryFinish();
 	}
 
 	void Game::makeTurn()
 	{
 		++_turn;
-		for (const auto index : _orders)
-		{
-			auto unit = findUnit(index);
-			if (!unit->attack(_map))
-				unit->move(_map);
-		}
-	}
-
-	bool Game::exist(Unit* unit) const
-	{
-		return _units.contains(unit->id());
-	}
-
-	Unit* Game::findUnit(const uint32_t id) const
-	{
-		const auto iter = _units.find(id);
-		if (iter == _units.end())
-			return nullptr;
-		return iter->second.get();
+		_model.forEach([this](const std::shared_ptr<Unit>& unit){unit->makeTurn(this->_map);});
 	}
 
 }

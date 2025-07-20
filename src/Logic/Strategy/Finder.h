@@ -2,9 +2,9 @@
 
 #include "Helpers/Position.h"
 #include "Logic/Unit.h"
-
 #include <memory>
 #include <vector>
+
 
 namespace sw::logic
 {

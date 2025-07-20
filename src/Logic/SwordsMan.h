@@ -1,10 +1,7 @@
 #pragma once
 
-#include "Strategy/Damager.h"
-#include "Strategy/Finder.h"
 #include "Unit.h"
 
-#include <memory>
 
 namespace sw::logic
 {
@@ -17,11 +14,5 @@ namespace sw::logic
 		~SwordsMan() override = default;
 
 		[[nodiscard]] const char* name() const override { return Name; }
-
-		[[nodiscard]] bool attack(Map& map) override;
-
-	private:
-		std::unique_ptr<FinderClose> _finder = nullptr;
-		std::unique_ptr<IDamager> _damager = nullptr;
 	};
 }

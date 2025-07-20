@@ -1,5 +1,5 @@
 #include "Map.h"
-
+#include <stdexcept>
 #include <algorithm>
 
 namespace sw::logic
@@ -58,7 +58,7 @@ namespace sw::logic
 			_delegate->onCreated(_width, _height);
 	}
 
-	void Map::spawn(Unit::Ptr unit, const Position& position)
+	void Map::spawn(const std::shared_ptr<Unit>& unit, const Position& position)
 	{
 		if (position.x >= width() || position.y >= height())
 			throw std::runtime_error("Position out of bounds x = " + std::to_string(position.x) + " y = " + std::to_string(position.y));
@@ -67,21 +67,21 @@ namespace sw::logic
 		cell(position).push(unit);
 
 		if (_delegate)
-			_delegate->onUnitSpawned(unit.get(), position);
+			_delegate->onUnitSpawned(unit, position);
 	}
 
-	void Map::kill(Unit* unit)
+	void Map::kill(const std::shared_ptr<Unit>& unit)
 	{
 		if (_delegate)
 			_delegate->onUnitDied(unit);
-		cell(unit->currentPosition()).clear();
+		cell(unit->getPath()->currentPosition()).clear();
 	}
 
 	void Map::moveUnit(const Position& old, const Position& now)
 	{
 		std::swap(cell(old).get(), cell(now).get());
 		if (_delegate)
-			_delegate->onUnitMoved(cell(now).get().get(), old, now);
+			_delegate->onUnitMoved(cell(now).get(), old, now);
 	}
 
 	Cell& Map::cell(const Position& position)

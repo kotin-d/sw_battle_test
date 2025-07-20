@@ -11,32 +11,32 @@ namespace sw::logic
 	// Двойнная диспечерезация дает таблицу соединения каждый с каждым. Но наша таблица соответствий очень вырожденная.
 	// Реализовывать честную двойную диспечерезацию не имеет смысла, будет много одинаковости. Поэтому часть ее заменяем
 	// просто динамической проверкой типа
-	class IReacher
+	class IUnDetector
 	{
 	public:
-		virtual ~IReacher() = default;
+		virtual ~IUnDetector() = default;
 		[[nodiscard]] virtual bool check(const IFinder* finder, const Position& attacker, const Position& target) const = 0;
 	};
 
-	class ReacherFull final: public IReacher
+	class UnDetectorFull final: public IUnDetector
 	{
 	public:
 		[[nodiscard]] bool check(const IFinder* finder, const Position& attacker, const Position& target) const override;
 	};
 
-	class ReacherOnlyClose final : public IReacher
+	class UnDetectorOnlyClose final : public IUnDetector
 	{
 	public:
 		[[nodiscard]] bool check(const IFinder* finder, const Position& attacker, const Position& target) const override;
 	};
 
-	class ReacherOnlyRange final : public IReacher
+	class UnDetectorOnlyRange final : public IUnDetector
 	{
 	public:
 		[[nodiscard]] bool check(const IFinder* finder, const Position& attacker, const Position& target) const override;
 	};
 
-	class ReacherRange final : public IReacher
+	class UnDetectorRange final : public IUnDetector
 	{
 
 	};
